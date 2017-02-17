@@ -78,7 +78,33 @@ Störungsmeldungen:
 ```
 $ efa --meldungen
 
-✓ Aktuell sind keine Störungen bekannt.
+L 14, 36, 37, 47: Fussballspiel, 19.02.2017,  FC Basel - FC Lausanne-Sport
+
+L 14:
+Es verkehren zusätzliche Trams zwischen Aeschenplatz und und St. Jakob.
+
+L 36:
+Wird vor Spielende ab ca. 15:15 ca. 17:30
+zwischen Breite und Dreispitz wie folgt umgeleitet:
+-> Kleinhüningen - Breite - Sevogelplatz*  - Dreispitz - Schifflände.
+-> Schifflände - Dreispitz - Aeschenplatz* - Breite - Kleinhüningen.
+
+*ab hier jeweils Umsteigemöglichkeit auf die L 14.
+
+Es verkehren Einsatzbusse zwischen Stadionstrasse und Breite, mit Halt an Redingstrasse, Forellenweg und Nasenweg.
+Die Haltestellen rund um das Stadion sind teilweise verschoben. Beachten Sie bitte die Hinweise vor Ort.
+
+L 37, 47:
+Bei einer Teil- oder Vollsperrung des Bereichs St. Jakob werden die L 37 und 47 umgeleitet, resp. am St. Jakob gewendet.
+Bitte beachten Sie die Durchsagen des BLT-Fahrpersonals.
+
+Beachten Sie bitte die Hinweise vor Ort.
+
+Bemerkungen:
+Spielbeginn: 13:45
+Das Matchticket ist zur freien Fahrt zum Stadion und zurück gültig.
+
+Es kann zu Abweichungen zum Online-Fahrplan kommen.
 ```
 
 ##Requirements:
