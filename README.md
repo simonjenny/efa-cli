@@ -7,8 +7,7 @@ PHP 5.3
 ##Installation
 
 ```
-wget https://github.com/simonjenny/efa-cli/blob/master/efa.phar?raw=true
-mv efa.phar > efa
+wget https://github.com/simonjenny/efa-cli/blob/master/efa.phar?raw=true -O efa 
 chmod a+x efa
 ```
 
