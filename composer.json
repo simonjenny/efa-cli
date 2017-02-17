@@ -1,0 +1,19 @@
+{
+    "name": "simonjenny/efa",
+    "authors": [
+        {
+            "name": "Simon Jenny",
+            "email": "simon.jenny@codecentric.ch"
+        }
+    ],
+    "require": {}
+    ,"autoload": {
+        "psr-0": {
+            "cli": "lib/",
+            "efa": "src/"
+        },
+        "files": [
+            "lib/cli/cli.php"
+        ]
+    }
+}
