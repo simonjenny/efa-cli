@@ -1,4 +1,4 @@
-#Command Line Tool für die Elektronische Fahrplanauskunft
+# Command Line Tool für die Elektronische Fahrplanauskunft
 
 Abfahrtsmonitor:
 ```
@@ -107,7 +107,7 @@ Das Matchticket ist zur freien Fahrt zum Stadion und zurück gültig.
 Es kann zu Abweichungen zum Online-Fahrplan kommen.
 ```
 
-##Requirements:
+## Requirements:
 
 PHP 5.3 
 
