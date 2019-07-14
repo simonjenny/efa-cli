@@ -4,25 +4,19 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit4aa6aa083250ca6e7063d9f62c092824
+class ComposerStaticInit282b89a6f98019dc54178061b33b88d4
 {
     public static $files = array (
-        '4b3cea27fe61e047be11cdf836f7229f' => __DIR__ . '/../..' . '/lib/cli/cli.php',
+        'be01b9b16925dcb22165c40b46681ac6' => __DIR__ . '/..' . '/wp-cli/php-cli-tools/lib/cli/cli.php',
+        '1faf6c111940bd183c232a99ae6eb143' => __DIR__ . '/../..' . '/efa/Efa.php',
     );
 
     public static $prefixesPsr0 = array (
-        'e' => 
-        array (
-            'efa' => 
-            array (
-                0 => __DIR__ . '/../..' . '/src',
-            ),
-        ),
         'c' => 
         array (
             'cli' => 
             array (
-                0 => __DIR__ . '/../..' . '/lib',
+                0 => __DIR__ . '/..' . '/wp-cli/php-cli-tools/lib',
             ),
         ),
     );
@@ -30,7 +24,7 @@ class ComposerStaticInit4aa6aa083250ca6e7063d9f62c092824
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit4aa6aa083250ca6e7063d9f62c092824::$prefixesPsr0;
+            $loader->prefixesPsr0 = ComposerStaticInit282b89a6f98019dc54178061b33b88d4::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

@@ -8,14 +8,18 @@ class Efa
   }
 
   public function run(){
-    if ($this->arguments['help']) {
+
+    if ($this->arguments['help'] && count($this->arguments) == 0) {
        echo $this->arguments->getHelpScreen().PHP_EOL.PHP_EOL;
        die();
     }
+
     foreach($this->arguments->getArguments() as $key => $value){
-      if(method_exists($this, $key)){
-        call_user_func(array($this, $key));
-        break;
+      if($value){
+        if(method_exists($this, $key)){
+          call_user_func(array($this, $key));
+          break;
+        }
       }
     }
   }

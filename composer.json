@@ -3,17 +3,13 @@
     "authors": [
         {
             "name": "Simon Jenny",
-            "email": "simon.jenny@codecentric.ch"
+            "email": "simon.jenny@kuvvu.ch"
         }
     ],
-    "require": {}
-    ,"autoload": {
-        "psr-0": {
-            "cli": "lib/",
-            "efa": "src/"
-        },
-        "files": [
-            "lib/cli/cli.php"
-        ]
+    "require": {
+        "wp-cli/php-cli-tools": "^0.11.11"
+    },
+    "autoload": {
+        "files": ["efa/Efa.php"]
     }
 }

@@ -1,8 +1,6 @@
 {
-    "chmod": "0755",
-    "directories": ["bin", "src", "lib", "vendor"],
-    "main": "bin/efa.php",
-    "output": "efa.phar",
-    "compression": "GZ",
-    "stub": true
+  "directories": ["bin", "efa", "vendor"],
+  "main": "bin/efa.php",
+  "output": "efa.phar",
+  "compression": "GZ"
 }

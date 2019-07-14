@@ -6,6 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'efa' => array($baseDir . '/src'),
-    'cli' => array($baseDir . '/lib'),
+    'cli' => array($vendorDir . '/wp-cli/php-cli-tools/lib'),
 );

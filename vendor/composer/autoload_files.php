@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    '4b3cea27fe61e047be11cdf836f7229f' => $baseDir . '/lib/cli/cli.php',
+    'be01b9b16925dcb22165c40b46681ac6' => $vendorDir . '/wp-cli/php-cli-tools/lib/cli/cli.php',
+    '1faf6c111940bd183c232a99ae6eb143' => $baseDir . '/efa/Efa.php',
 );

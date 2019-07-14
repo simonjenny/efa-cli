@@ -1,12 +1,9 @@
 
 <?php
-error_reporting(0);
-ini_set( "display_errors",0);
-date_default_timezone_set('Europe/Zurich');
+require_once 'common.php';
 
-require 'common.php';
-
-$arguments = new \cli\Arguments();
+$strict = in_array('--strict', $_SERVER['argv']);
+$arguments = new \cli\Arguments(compact('strict'));
 
 $arguments->addFlag(array('help', 'h'), 'Diese Hilfe');
 $arguments->addFlag(array('nofancy', 'n'), 'Tabellen als einfache Listen ausgeben ohne Kopfzeile');
