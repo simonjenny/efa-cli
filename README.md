@@ -129,7 +129,8 @@ Flags
 
 Options
   --info, -i   Zeige Informationen zu einer Haltestelle
-  --start, -s  Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese Haltestelle an wenn kein Ziel angegeben wurde.
+  --start, -s  Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese
+               Haltestelle an wenn kein Ziel angegeben wurde.
   --ziel, -z   Zielhaltestelle für Route
 
 ```
