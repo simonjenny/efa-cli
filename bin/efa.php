@@ -6,21 +6,20 @@ $strict = in_array('--strict', $_SERVER['argv']);
 $arguments = new \cli\Arguments(compact('strict'));
 
 $arguments->addFlag(array('help', 'h'), 'Diese Hilfe');
-$arguments->addFlag(array('nofancy', 'n'), 'Tabellen als einfache Listen ausgeben ohne Kopfzeile');
-$arguments->addFlag(array('route','r'), 'Zeigt eine Reiseroute von --start nach --ziel');
-$arguments->addFlag(array('meldungen'), 'Aktuelle Meldungen ausgeben');
+$arguments->addFlag(array('notfancy', 'n'), 'Tabellen als einfache Listen ausgeben ohne Kopfzeile');
+$arguments->addFlag(array('meldungen', 'm'), 'Aktuelle Meldungen ausgeben');
 
-$arguments->addOption(array('monitor', 'm'), array(
+$arguments->addOption(array('info', 'i'), array(
 	'default'     => '',
-	'description' => 'Zeige alle Abfahrten ab dieser Haltestelle')
+	'description' => 'Zeige Informationen zu einer Haltestelle')
 );
 $arguments->addOption(array('start', 's'), array(
 	'default'     => '',
-	'description' => 'Starthaltestelle für --route')
+	'description' => 'Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese Haltestelle an wenn kein Ziel angegeben wurde.')
 );
 $arguments->addOption(array('ziel', 'z'), array(
 	'default'     => '',
-	'description' => 'Zielhaltestelle für --route')
+	'description' => 'Zielhaltestelle für Route')
 );
 
 $arguments->parse();

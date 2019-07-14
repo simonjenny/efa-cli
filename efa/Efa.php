@@ -14,23 +14,35 @@ class Efa
        die();
     }
 
-    foreach($this->arguments->getArguments() as $key => $value){
-      if($value){
-        if(method_exists($this, $key)){
-          call_user_func(array($this, $key));
-          break;
-        }
-      }
+    if($this->arguments['start'] && $this->arguments['ziel'])
+       $this->route();
+
+    if($this->arguments['start'] && !$this->arguments['ziel'])
+       $this->monitor();
+
+    if($this->arguments['meldungen'])
+       $this->meldungen();
+
+     if($this->arguments['info'])
+        $this->info();
+
+  }
+
+  public function info(){
+    if(!is_numeric($this->arguments['info'])){
+      $this->getStationList('info','info');
+      return false;
     }
+    $departures = json_decode(file_get_contents(sprintf('https://www.efa-bw.de/bvb3/XML_DM_REQUEST?laguage=de&typeInfo_dm=stopID&deleteAssignedStops_dm=1&useRealtime=1&mode=direct&excludedMeans=0&excludedMeans=1&excludedMeans=2&limit=10&outputFormat=JSON&coordOutputFormat=WGS84[DD.DDDDD]&nameInfo_dm=%s', urlencode($this->arguments['info']))), false);
+    \cli\line("Efa-ID: {$departures->dm->points->point->ref->id}");
+    $geo = explode(',', $departures->dm->points->point->ref->coords);
+    \cli\line("Koordinaten: {$geo[1]}, {$geo[0]}");
+    \cli\line("Google Maps: https://www.google.com/maps/search/?api=1&query={$geo[1]},{$geo[0]}");
+    \cli\line("BVB Anfahrtsmonitor: https://dfi.citykanal.com/?point={$departures->dm->points->point->ref->id}");
+
   }
 
   public function route(){
-
-    if($this->arguments['start'] == false ||$this->arguments['ziel'] == false){
-      \cli\err('Fehler! Die Parameter für die Start und/oder Zielhaltestelle fehlen!');
-      echo $this->arguments->getHelpScreen().PHP_EOL.PHP_EOL;
-      return false;
-    }
 
     if(!is_numeric($this->arguments['start'])){
       $this->getStationList('route','start');
@@ -41,7 +53,9 @@ class Efa
       return false;
     }
 
-    $data = json_decode(file_get_contents(sprintf("http://www.efa-bw.de/bvb/XML_TRIP_REQUEST2?itdDate=%s&itdTime=%s&language=de&sessionID=0&outputFormat=JSON&type_origin=stop&name_origin=%s&type_destination=stop&name_destination=%s", date('Ymd') , date('Hi'), $this->arguments['start'], $this->arguments['ziel'])),false);
+    $res   = file_get_contents(sprintf("https://www.efa-bw.de/bvb3/XSLT_TRIP_REQUEST2?itdDate=%s&itdTime=%s&language=de&sessionID=0&outputFormat=JSON&type_origin=stop&name_origin=%s&type_destination=stop&name_destination=%s", date('Ymd') , date('Hi'), $this->arguments['start'], $this->arguments['ziel']));
+    $data  = json_decode(utf8_encode($res) ,false);
+
     \cli\line("Verfügbare Routen von %s nach %s".PHP_EOL, $data->origin->points->point->name, $data->destination->points->point->name);
     $trips = [];
     $i = 0;
@@ -87,34 +101,12 @@ class Efa
 
   }
 
-  public function meldungen(){
-    $data = json_decode(file_get_contents("http://www.efa-bw.de/bvb/XML_ADDINFO_REQUEST?filterProviderCode=Basler%20Verkehrs-Betriebe%20(BVB)&outputFormat=JSON"), false);
-    if($data->additionalInformation->travelInformations->travelInformation){
-      foreach($data->additionalInformation->travelInformations->travelInformation as $info){
-        \cli\line(\cli\Colors::colorize("%r".$info->infoLink->infoLinkText."%n"), true);
-        $text = strip_tags(html_entity_decode($info->infoLink->content), '<br>');
-        $text = str_replace('<br /><br />',PHP_EOL, $text);
-        $text = str_replace('<br />',PHP_EOL, $text);
-        \cli\line($text);
-      }
-    } else {
-      \cli\line(\cli\Colors::colorize("%g✓ Aktuell sind keine Störungen bekannt.%n", true));
-    }
-
-  }
-
   public function monitor(){
 
-    if($this->arguments['monitor'] == false){
-      \cli\err('Fehler! Der Parameter für die Haltestelle fehlt!');
-      echo $this->arguments->getHelpScreen().PHP_EOL.PHP_EOL;
-      return false;
-    }
-
-    if(is_numeric($this->arguments['monitor'])){
+    if(is_numeric($this->arguments['start'])){
       $data   = [];
       $headers= ['Min', '', '#', 'Nach'];
-      $departures = json_decode(file_get_contents(sprintf('http://www.efa-bw.de/bvb/XML_DM_REQUEST?laguage=de&typeInfo_dm=stopID&deleteAssignedStops_dm=1&useRealtime=1&mode=direct&excludedMeans=0&excludedMeans=1&excludedMeans=2&limit=10&outputFormat=JSON&nameInfo_dm=%s', urlencode($this->arguments['monitor']))), false);
+      $departures = json_decode(file_get_contents(sprintf('https://www.efa-bw.de/bvb3/XML_DM_REQUEST?laguage=de&typeInfo_dm=stopID&deleteAssignedStops_dm=1&useRealtime=1&mode=direct&excludedMeans=0&excludedMeans=1&excludedMeans=2&limit=10&outputFormat=JSON&nameInfo_dm=%s', urlencode($this->arguments['start']))), false);
       foreach($departures->departureList as $departure){
         $data[] = [
           $this->padd($departure->countdown),
@@ -134,12 +126,12 @@ class Efa
         $table->display();
       }
     } else {
-      $this->getStationList('monitor','monitor');
+      $this->getStationList('monitor','start');
     }
   }
 
   public function getStationList($callback, $target){
-    $stations = json_decode(file_get_contents(sprintf('http://www.efa-bw.de/bvb/XSLT_STOPFINDER_REQUEST?language=de&outputFormat=JSON&coordOutputFormat=WGS84[DD.ddddd]&itdLPxx_usage=origin&useLocalityMainStop=true&SpEncId=0&locationServerActive=1&stateless=1&type_sf=any&anyObjFilter_sf=2&anyMaxSizeHitList=50&name_sf=%s', urlencode($this->arguments[$target]))), false);
+    $stations = json_decode(file_get_contents(sprintf('https://www.efa-bw.de/bvb3/XSLT_STOPFINDER_REQUEST?language=de&outputFormat=JSON&coordOutputFormat=WGS84[DD.ddddd]&itdLPxx_usage=origin&useLocalityMainStop=true&SpEncId=0&locationServerActive=1&stateless=1&type_sf=any&anyObjFilter_sf=2&anyMaxSizeHitList=50&name_sf=%s', urlencode($this->arguments[$target]))), false);
     if(count($stations->stopFinder->points) == 1){
       $this->arguments[$target] = $stations->stopFinder->points->point->stateless;
       call_user_func(array($this, $callback));
@@ -162,6 +154,30 @@ class Efa
         }
       }
     }
+  }
+
+  public function meldungen(){
+    $data = json_decode(file_get_contents("https://www.efa-bw.de/bvb3/XML_ADDINFO_REQUEST?filterProviderCode=Basler%20Verkehrs-Betriebe%20(BVB)&outputFormat=JSON"), false);
+    if($data->additionalInformation->travelInformations->travelInformation){
+      foreach($data->additionalInformation->travelInformations->travelInformation as $info){
+        \cli\line(\cli\Colors::colorize("%r".$info->infoLink->infoLinkText."%n"), true);
+
+        $text = $info->infoLink->content;
+        $text = str_replace('&nbsp;','', $text);
+        $text = html_entity_decode($text);
+        $text = strip_tags($text, '<br>');
+        $text = str_replace(PHP_EOL,'', $text);
+        $text = preg_replace('/(\>)\s*(\<)/m', '$1$2', $text);
+        $text = preg_replace('/(<br\ ?\/?>)+/', '<br>', $text);
+        $text = preg_replace('/\s+/', ' ', $text);
+        $text = str_replace('<br>',PHP_EOL, $text);
+
+        \cli\out($text.PHP_EOL);
+      }
+    } else {
+      \cli\line(\cli\Colors::colorize("%g✓ Aktuell sind keine Störungen bekannt.%n", true));
+    }
+
   }
 
   private function padd($t){

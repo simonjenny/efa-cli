@@ -2,7 +2,7 @@
 
 Abfahrtsmonitor:
 ```
-$ efa --monitor Basel, Mparc
+$ efa --start Basel, Mparc
 
 +-----+----------+----+------------------------+
 | Min |          | #  | Nach                   |
@@ -22,7 +22,7 @@ $ efa --monitor Basel, Mparc
 
 Routenplaner:
 ```
-$ efa --route --start Basel, MParc --ziel Allschwil
+$ efa --start Basel, MParc --ziel Allschwil
 
 Parameter --ziel hat mehrere Haltestellenmöglichkeiten:
 
@@ -109,12 +109,12 @@ Es kann zu Abweichungen zum Online-Fahrplan kommen.
 
 ## Requirements:
 
-PHP 5.3 
+PHP 5.3
 
 ##Installation
 
 ```
-wget https://github.com/simonjenny/efa-cli/blob/master/efa.phar?raw=true -O efa 
+wget https://github.com/simonjenny/efa-cli/blob/master/efa.phar?raw=true -O efa
 chmod a+x efa
 ```
 
@@ -124,13 +124,12 @@ $ efa --help
 
 Flags
   --help, -h     Diese Hilfe
-  --nofancy, -n  Tabellen als einfache Listen ausgeben ohne Kopfzeile
-  --route, -r    Zeigt eine Reiseroute von --start nach --ziel
+  --notfancy, -n  Tabellen als einfache Listen ausgeben ohne Kopfzeile
+  --info, -i     Zeige Informationen zu einer Haltestelle
   --meldungen    Aktuelle Meldungen ausgeben
 
 Options
-  --monitor, -m  Zeige alle Abfahrten ab dieser Haltestelle
   --start, -s    Starthaltestelle für --route
   --ziel, -z     Zielhaltestelle für --route
-  
+
 ```
