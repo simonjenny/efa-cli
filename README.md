@@ -123,13 +123,13 @@ chmod a+x efa
 $ efa --help
 
 Flags
-  --help, -h     Diese Hilfe
-  --notfancy, -n  Tabellen als einfache Listen ausgeben ohne Kopfzeile
-  --info, -i     Zeige Informationen zu einer Haltestelle
-  --meldungen    Aktuelle Meldungen ausgeben
+  --help, -h       Diese Hilfe
+  --notfancy, -n   Tabellen als einfache Listen ausgeben ohne Kopfzeile
+  --meldungen, -m  Aktuelle Meldungen ausgeben
 
 Options
-  --start, -s    Starthaltestelle für --route
-  --ziel, -z     Zielhaltestelle für --route
+  --info, -i   Zeige Informationen zu einer Haltestelle
+  --start, -s  Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese Haltestelle an wenn kein Ziel angegeben wurde.
+  --ziel, -z   Zielhaltestelle für Route
 
 ```
