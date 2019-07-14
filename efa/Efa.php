@@ -9,7 +9,7 @@ class Efa
 
   public function run(){
 
-    if ($this->arguments['help'] && count($this->arguments) == 0) {
+    if ($this->arguments['help'] || count($_SERVER['argv']) == 1) {
        echo $this->arguments->getHelpScreen().PHP_EOL.PHP_EOL;
        die();
     }
