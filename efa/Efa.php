@@ -159,8 +159,11 @@ class Efa
   public function meldungen(){
     $data = json_decode(file_get_contents("https://www.efa-bw.de/bvb3/XML_ADDINFO_REQUEST?filterProviderCode=Basler%20Verkehrs-Betriebe%20(BVB)&outputFormat=JSON"), false);
     if($data->additionalInformation->travelInformations->travelInformation){
+
+      $menu = [];
+      $message = [];
+
       foreach($data->additionalInformation->travelInformations->travelInformation as $info){
-        \cli\line(\cli\Colors::colorize("%r".$info->infoLink->infoLinkText."%n"), true);
 
         $text = $info->infoLink->content;
         $text = str_replace('&nbsp;','', $text);
@@ -172,7 +175,21 @@ class Efa
         $text = preg_replace('/\s+/', ' ', $text);
         $text = str_replace('<br>',PHP_EOL, $text);
 
-        \cli\out($text.PHP_EOL);
+        $menu[md5($info->infoLink->infoLinkText)] = $info->infoLink->infoLinkText;
+        $message[md5($info->infoLink->infoLinkText)] = $text;
+
+      }
+      $menu['quit'] = 'Abbrechen';
+      while (true) {
+      	$choice = \cli\menu($menu, null, 'Bitte wähle eine Meldung');
+      	\cli\line();
+      	if ($choice == 'quit') {
+      		break;
+      	} else {
+          \cli\line(\cli\Colors::colorize("%g ✓ {$menu[$choice]} %n ", true));
+          \cli\out($message[$choice]);
+          break;
+        }
       }
     } else {
       \cli\line(\cli\Colors::colorize("%g✓ Aktuell sind keine Störungen bekannt.%n", true));
