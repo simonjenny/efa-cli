@@ -1,6 +1,6 @@
 {
-  "directories": ["bin", "efa", "vendor"],
-  "main": "bin/efa.php",
+  "directories": ["bin", "lib", "vendor"],
+  "main": "bin/app.php",
   "output": "efa.phar",
   "compression": "GZ"
 }

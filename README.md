@@ -1,5 +1,22 @@
 # Command Line Tool für die Elektronische Fahrplanauskunft
 
+
+```
+$ efa --help
+
+Flags
+  --help, -h       Diese Hilfe
+  --notfancy, -n   Tabellen als einfache Listen ausgeben ohne Kopfzeile
+  --meldungen, -m  Aktuelle Meldungen ausgeben
+
+Options
+  --info, -i   Zeige Informationen zu einer Haltestelle
+  --start, -s  Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese
+               Haltestelle an wenn kein Ziel angegeben wurde.
+  --ziel, -z   Zielhaltestelle für Route
+
+```
+
 Abfahrtsmonitor:
 ```
 $ efa --start Basel, Mparc
@@ -106,9 +123,10 @@ Grund:
 Bauarbeiten
 ```
 
-## Requirements:
+## Requirements
 
 PHP 5.3
+Box (für PHAR)
 
 ## Installation
 
@@ -117,19 +135,14 @@ wget https://github.com/simonjenny/efa-cli/blob/master/efa.phar?raw=true -O efa
 chmod a+x efa
 ```
 
+## Build
 
+1. Repository klonen
+2. Composer
 ```
-$ efa --help
-
-Flags
-  --help, -h       Diese Hilfe
-  --notfancy, -n   Tabellen als einfache Listen ausgeben ohne Kopfzeile
-  --meldungen, -m  Aktuelle Meldungen ausgeben
-
-Options
-  --info, -i   Zeige Informationen zu einer Haltestelle
-  --start, -s  Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese
-               Haltestelle an wenn kein Ziel angegeben wurde.
-  --ziel, -z   Zielhaltestelle für Route
-
+composer install
+```
+3. Box Build
+```
+box compile
 ```
