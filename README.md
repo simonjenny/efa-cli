@@ -126,7 +126,7 @@ Bauarbeiten
 ## Requirements
 
 - min. PHP 5.3
-- (https://github.com/humbug/box)Box (für PHAR)
+- https://github.com/humbug/box
 
 ## Installation
 
