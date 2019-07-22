@@ -3,7 +3,6 @@ vendor/
 !.env.example
 logs/
 *.log
-efa.phar
 
 # OS generated files #
 ######################
