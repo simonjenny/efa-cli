@@ -125,8 +125,8 @@ Bauarbeiten
 
 ## Requirements
 
-min. PHP 5.3
-Box (für PHAR)
+- min. PHP 5.3
+- Box (für PHAR)
 
 ## Installation
 
