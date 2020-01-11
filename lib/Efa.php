@@ -57,7 +57,8 @@ class Efa
         }
 
         $res   = file_get_contents(sprintf("https://www.efa-bw.de/bvb3/XSLT_TRIP_REQUEST2?itdDate=%s&itdTime=%s&language=de&sessionID=0&outputFormat=JSON&type_origin=stop&name_origin=%s&type_destination=stop&name_destination=%s", date('Ymd'), date('Hi'), $this->arguments['start'], $this->arguments['ziel']));
-        $data  = json_decode(utf8_encode($res), false);
+        $res   = mb_convert_encoding($res, "UTF-8");
+        $data  = json_decode($res, false);
 
         \cli\line("Verfügbare Routen von %s nach %s".PHP_EOL, $data->origin->points->point->name, $data->destination->points->point->name);
         $trips = [];
