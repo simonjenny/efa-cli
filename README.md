@@ -126,6 +126,7 @@ Bauarbeiten
 ## Requirements
 
 - min. PHP 5.3
+- mbstring
 - https://github.com/humbug/box
 
 ## Installation
