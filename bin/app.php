@@ -32,7 +32,7 @@ $arguments->addOption(array('info', 'i'), array(
 );
 $arguments->addOption(array('start', 's'), array(
 	'default'     => '',
-	'description' => 'Starthaltestelle für Route, zeigt Abfahrtsmonitor für diese Haltestelle an wenn kein Ziel angegeben wurde.')
+	'description' => "Starthaltestelle für Route, zeigt die nächsten Abfahrten für   diese Haltestelle, an wenn kein Ziel angegeben wurde.")
 );
 $arguments->addOption(array('ziel', 'z'), array(
 	'default'     => '',
