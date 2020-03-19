@@ -24,6 +24,7 @@ $arguments = new \cli\Arguments(compact('strict'));
 
 $arguments->addFlag(array('help', 'h'), 'Diese Hilfe');
 $arguments->addFlag(array('notfancy', 'n'), 'Tabellen als einfache Listen ausgeben ohne Kopfzeile');
+$arguments->addFlag(array('json', 'j'), 'Tabellen als JSON Listen ausgeben ohne Kopfzeile');
 $arguments->addFlag(array('meldungen', 'm'), 'Aktuelle Meldungen ausgeben');
 
 $arguments->addOption(array('info', 'i'), array(

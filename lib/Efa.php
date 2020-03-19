@@ -119,14 +119,21 @@ class Efa
         ];
             }
             if ($this->arguments['notfancy']) {
+              if ($this->arguments['json']) {
+                echo json_encode($data).PHP_EOL;
+              } else {
                 foreach ($data as $line) {
                     \cli\line("{:0} {:1} {:2} {:3}", $line);
                 }
+              }
+
             } else {
-                $table = new \cli\Table();
-                $table->setHeaders($headers);
-                $table->setRows($data);
-                $table->display();
+
+              $table = new \cli\Table();
+              $table->setHeaders($headers);
+              $table->setRows($data);
+              $table->display();
+
             }
         } else {
             $this->getStationList('monitor', 'start');
