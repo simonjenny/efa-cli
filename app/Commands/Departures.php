@@ -64,10 +64,10 @@ class Departures extends Command implements PromptsForMissingInput
 
             foreach ($departures as $departure) {
 
-             $departure->realtime = \Carbon\Carbon::parse(
+             $departure->realtime = round(\Carbon\Carbon::now()->diffInMinutes(\Carbon\Carbon::parse(
                 $departure->departureTimeEstimated ??
                 $departure->departureTimePlanned
-             )->diffInMinutes(\Carbon\Carbon::now());
+             )));
              $tmp[] = $departure;
 
             }
