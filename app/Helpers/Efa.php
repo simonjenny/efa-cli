@@ -51,22 +51,7 @@ class Efa
 
     public static function abfahrt($haltestelle, $limit = 10)
     {
-        $tmp = [];
         $gid = self::haltestelle($haltestelle)->ref->gid ?? '';
-
-        foreach (self::load('XML_DM_REQUEST?laguage=de&typeInfo_dm=stopID&deleteAssignedStops_dm=1&useRealtime=1&mode=direct&outputFormat=rapidJSON&limit='.$limit.'&nameInfo_dm='.$gid)->stopEvents ?? [] as $departure) {
-
-            $tmp[] = [
-                'type' => ($departure->transportation->product->name == 'Bus') ? '🚌' : '🚊',
-                'number' => $departure->transportation->number ?? '',
-                'destination' => $departure->transportation->destination->name,
-                'time' => \Carbon\Carbon::parse(
-                    $departure->departureTimeEstimated ??
-                    $departure->departureTimePlanned
-                )->diffForHumans(),
-            ];
-        }
-
-        return $tmp;
+        return self::load('XML_DM_REQUEST?laguage=de&typeInfo_dm=stopID&deleteAssignedStops_dm=1&useRealtime=1&mode=direct&outputFormat=rapidJSON&limit='.$limit.'&nameInfo_dm='.$gid)->stopEvents ?? [];
     }
 }

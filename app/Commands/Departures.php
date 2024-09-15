@@ -57,15 +57,42 @@ class Departures extends Command implements PromptsForMissingInput
         Config::set('json', $this->option('json'));
         Config::set('limit', $this->option('limit') ?? 10);
 
+        $departures = Efa::abfahrt($this->arguments()['stop'], config('limit'));
+        $tmp = [];
+
         if (config('json')) {
 
-            echo json_encode(Efa::abfahrt($this->arguments()['stop'], config('limit')), JSON_PRETTY_PRINT).PHP_EOL;
+            foreach ($departures as $departure) {
+
+             $departure->realtime = \Carbon\Carbon::parse(
+                $departure->departureTimeEstimated ??
+                $departure->departureTimePlanned
+             )->diffInMinutes(\Carbon\Carbon::now());
+             $tmp[] = $departure;
+
+            }
+
+             echo json_encode($departures, JSON_PRETTY_PRINT).PHP_EOL;
 
         } else {
 
+
+            foreach ($departures as $departure) {
+
+                $tmp[] = [
+                    'type' => ($departure->transportation->product->name == 'Bus') ? '🚌' : '🚊',
+                    'number' => $departure->transportation->number ?? '',
+                    'destination' => $departure->transportation->destination->name,
+                    'time' => \Carbon\Carbon::parse(
+                        $departure->departureTimeEstimated ??
+                        $departure->departureTimePlanned
+                    )->diffForHumans(),
+                ];
+            }
+
             table(
                 headers: ['', 'Nr.', 'Destination', 'Departure'],
-                rows: Efa::abfahrt($this->arguments()['stop'], config('limit'))
+                rows: $tmp
             );
 
         }
