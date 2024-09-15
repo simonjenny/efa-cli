@@ -22,7 +22,7 @@ PHP 8.3
 
 ```bash 
 wget https://github.com/simonjenny/efa-cli/blob/master/builds/efa?raw=true -O efa
-chmod a+x efa
+chmod a+x efa && sudo mv efa /usr/local/bin
 ```
 
 ## Demo
