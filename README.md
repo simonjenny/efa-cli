@@ -16,7 +16,7 @@
 
 ## Requirements
 
-PHP 8.3
+min. PHP 8.2
 
 ## Installation
 
