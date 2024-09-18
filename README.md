@@ -25,6 +25,10 @@ wget https://github.com/simonjenny/efa-cli/blob/master/builds/efa?raw=true -O ef
 chmod a+x efa && sudo mv efa /usr/local/bin
 ```
 
+## Run with Docker
+
+docker run -it simonjenny/efa OPTIONS ARGUMENTS
+
 ## Demo
 
 [![asciicast](https://asciinema.org/a/yKMgOGa3LiOn1CBIDtN8AqSE4.svg)](https://asciinema.org/a/yKMgOGa3LiOn1CBIDtN8AqSE4)
