@@ -27,7 +27,9 @@ chmod a+x efa && sudo mv efa /usr/local/bin
 
 ## Run with Docker
 
+```bash 
 docker run -it simonjenny/efa OPTIONS ARGUMENTS
+```
 
 ## Demo
 
