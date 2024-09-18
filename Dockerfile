@@ -1,7 +1,6 @@
 FROM php:8.3-cli-alpine
 
-ADD ./builds/efa /app
-
+COPY ./builds/efa /app/efa
 WORKDIR /app
 
-ENTRYPOINT ["efa"]
+ENTRYPOINT ["/app/efa"]
