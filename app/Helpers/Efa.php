@@ -49,9 +49,9 @@ class Efa
 
     }
 
-    public static function abfahrt($haltestelle, $limit = 10)
+    public static function abfahrt($haltestelle, $limit = 10, $isgid)
     {
-        $gid = self::haltestelle($haltestelle)->ref->gid ?? '';
+        $gid = ($isgid) ? $haltestelle : self::haltestelle($haltestelle)->ref->gid ?? '';
         return self::load('XML_DM_REQUEST?laguage=de&typeInfo_dm=stopID&deleteAssignedStops_dm=1&useRealtime=1&mode=direct&outputFormat=rapidJSON&limit='.$limit.'&nameInfo_dm='.$gid)->stopEvents ?? [];
     }
 }

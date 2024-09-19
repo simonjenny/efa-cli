@@ -20,6 +20,7 @@ class Departures extends Command implements PromptsForMissingInput
     protected $signature = 'departures
                            {stop : Displays the departures for this stop (optional)}
                            {--limit= : Limits the number of displayed departures (default is 10, optional)}
+                           {--gid : Provided Stop ID is a GID (optional)}
                            {--json : Shows data as JSON (optional)}';
 
     /**
@@ -57,7 +58,7 @@ class Departures extends Command implements PromptsForMissingInput
         Config::set('json', $this->option('json'));
         Config::set('limit', $this->option('limit') ?? 10);
 
-        $departures = Efa::abfahrt($this->arguments()['stop'], config('limit'));
+        $departures = Efa::abfahrt($this->arguments()['stop'], config('limit'), $this->option('gid'));
         $tmp = [];
 
         if (config('json')) {
