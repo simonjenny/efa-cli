@@ -64,7 +64,7 @@ class Departures extends Command implements PromptsForMissingInput
         if (config('json')) {
 
             foreach ($departures as $departure) {
-             $departure->realtime = round(\Carbon\Carbon::now()->diffInMinutes(\Carbon\Carbon::parse(
+             $departure->realtime = floor(\Carbon\Carbon::now()->diffInMinutes(\Carbon\Carbon::parse(
                 $departure->departureTimeEstimated ??
                 $departure->departureTimePlanned
              )));
