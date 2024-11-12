@@ -31,9 +31,9 @@ class Efa
         return self::load('XSLT_STOPFINDER_REQUEST?language=de&outputFormat=JSON&coordOutputFormat=WGS84[DD.ddddd]&itdLPxx_usage=origin&useLocalityMainStop=true&SpEncId=0&locationServerActive=1&stateless=1&type_sf=any&anyObjFilter_sf=2&anyMaxSizeHitList=1&name_sf='.$haltestelle)->stopFinder->points->point ?? false;
     }
 
-    public static function route($start, $ziel): ?object
+    public static function route($arguments): ?object
     {
-        return self::load(sprintf('XSLT_TRIP_REQUEST2?itdDate=%s&itdTime=%s&language=de&sessionID=0&outputFormat=JSON&type_origin=stop&name_origin=%s&type_destination=stop&name_destination=%s', date('Ymd'), date('Hi'), $start, $ziel));
+        return self::load(sprintf('XSLT_TRIP_REQUEST2?itdDate=%s&itdTime=%s&language=de&sessionID=0&outputFormat=JSON&type_origin=stop&name_origin=%s&type_destination=stop&name_destination=%s&itdTripDateTimeDepArr=%s', $arguments['date'] ?? date('Ymd'), $arguments['time'] ?? date('Hi'), $arguments['start'], $arguments['destination'],  $arguments['mode']));
     }
 
     public static function haltestellen($search): array

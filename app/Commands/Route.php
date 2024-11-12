@@ -11,6 +11,7 @@ use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\search;
 use function Laravel\Prompts\select;
 use function Laravel\Prompts\table;
+use function Laravel\Prompts\text;
 use function Laravel\Prompts\error;
 
 class Route extends Command implements PromptsForMissingInput
@@ -26,6 +27,12 @@ class Route extends Command implements PromptsForMissingInput
 
                             {destination : Destination Stop (optional)}
 
+                            {time : Time for arrival/departure (optional)}
+
+                            {date : Date for arrival/departure (optional)}
+
+                            {mode : Show trips on date for arrival or departure (optional)}
+
                             {--json : Shows data as JSON (optional)}';
 
     /**
@@ -33,7 +40,7 @@ class Route extends Command implements PromptsForMissingInput
      *
      * @var string
      */
-    protected $description = 'Plan a trip from point A to point B (currently only routes available from the current time and date)';
+    protected $description = 'Plan a trip from point A to point B';
 
     /**
      * Aks for missing Information.
@@ -59,6 +66,18 @@ class Route extends Command implements PromptsForMissingInput
                     ? Efa::haltestellen("%{$value}%")
                     : []
             ),
+            'time' => fn () => text(
+                label: 'At wich time would you like to departure/arrive ?',
+                default : date('H:i')
+            ),
+            'date' => fn () => text(
+                label: 'At wich date would you like to departure/arrive ?',
+                default : date('d.m.Y')
+            ),
+            'mode' => fn () => select(
+                label: 'Do you want the trips for',
+                options: ['Departure', 'Arrival']
+            )
         ];
     }
 
@@ -70,7 +89,7 @@ class Route extends Command implements PromptsForMissingInput
 
         Config::set('json', $this->option('json'));
 
-        $routes = Efa::route($this->arguments()['start'], $this->arguments()['destination']);
+        $routes = Efa::route($this->arguments());
 
         if (config('json')) {
 
