@@ -1,0 +1,14 @@
+
+ ┌───────────────────────┬────────────────────────────────────────────────────────────────────┐
+ │[2m Basel, SBB            [22m│[2m                                                                    [22m│
+ ├───────────────────────┼────────────────────────────────────────────────────────────────────┤
+ │ EFA Stop ID           │ 51000300                                                           │
+ │ GID                   │ ch:23005:300                                                       │
+ │ Coordinates           │ 7.589354,47.547394                                                 │
+ │ Google Maps           │ https://www.google.com/maps/search/?api=1&query=47.547394,7.589354 │
+ │ Web Departure Monitor │ https://dfi.bvb.ch/?point=51000300                                 │
+ │                       │                                                                    │
+ │ Info                  │ Eingeschränkter Betrieb                                            │
+ │                       │ Detailed information available at http://info.bvb.ch (German only) │
+ └───────────────────────┴────────────────────────────────────────────────────────────────────┘
+

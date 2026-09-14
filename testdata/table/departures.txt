@@ -1,0 +1,9 @@
+
+ ┌────┬─────┬───────────────────────────────┬─────────────────────┐
+ │[2m    [22m│[2m Nr. [22m│[2m Destination                   [22m│[2m Departure           [22m│
+ ├────┼─────┼───────────────────────────────┼─────────────────────┤
+ │ 🚊 │ 11  │ Reinach BL, Surbaum           │ 25 seconds from now │
+ │ 🚊 │ 16  │ Schifflände                   │ 3 minutes from now  │
+ │ 🚌 │ 30  │ Weil am Rhein Bahnhof/Zentrum │ 11 minutes from now │
+ └────┴─────┴───────────────────────────────┴─────────────────────┘
+

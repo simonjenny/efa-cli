@@ -1,0 +1,6 @@
+
+[90m ┌[39m [36mWhich alert would you like to read?[39m [90m───────────────────────────────────────┐[39m
+[90m │[39m [36m›[39m [36m●[39m Eingeschränkter Betrieb zwischen Basel, Aeschenplatz und Basel, Bur…   [90m│[39m
+[90m │[39m   [2m○[22m [2mUnregelmässiger Betrieb im Bereich Basel, Bruderholz[22m                   [90m│[39m
+[90m └────────────────────────────────────────────────────────────────────────────┘[39m
+

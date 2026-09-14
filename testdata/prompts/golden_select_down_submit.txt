@@ -1,0 +1,6 @@
+
+[90m ┌[39m [2mWhich alert would you like to read?[22m [90m─────────────────────────┐[39m
+[90m │[39m Unregelmässiger Betrieb im Bereich Basel, Bruderholz         [90m│[39m
+[90m └──────────────────────────────────────────────────────────────┘[39m
+
+[?25h

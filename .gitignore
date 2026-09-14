@@ -1,0 +1,9 @@
+/builds
+/static
+/release
+/vendor
+/.idea
+/.vscode
+/.vagrant
+*.test
+*.out
