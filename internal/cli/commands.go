@@ -71,8 +71,8 @@ func runDepartures(p *parsedArgs) int {
 
 	jsonMode := p.has("json")
 	limit := "10"
-	if v := p.value("limit"); v != "" {
-		limit = v
+	if p.has("limit") {
+		limit = p.value("limit")
 	}
 
 	client.UseSpinner = !jsonMode
