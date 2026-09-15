@@ -5,8 +5,10 @@ package prompts
 
 import (
 	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"unsafe"
 
@@ -87,9 +89,10 @@ func IsInteractive() bool {
 }
 
 // rawState is the previous terminal state while a prompt is active.
-var rawState *term.State
+var rawState *ttyState
 
-// MakeRaw switches the terminal into raw mode (stty -icanon -isig -echo).
+// MakeRaw switches the terminal into raw input mode
+// (stty -icanon -isig -echo).
 func MakeRaw() {
 	if fakeInput != nil {
 		return
@@ -97,12 +100,13 @@ func MakeRaw() {
 	if rawState != nil {
 		return
 	}
-	state, err := term.MakeRaw(int(os.Stdin.Fd()))
+	state, err := makeRawTTY(int(os.Stdin.Fd()))
 	if err != nil {
 		// Fall back gracefully: continue without raw mode.
 		return
 	}
 	rawState = state
+	installSignalHandler()
 }
 
 // RestoreRaw restores the terminal to its previous state.
@@ -113,7 +117,7 @@ func RestoreRaw() {
 	if rawState == nil {
 		return
 	}
-	_ = term.Restore(int(os.Stdin.Fd()), rawState)
+	_ = restoreTTY(int(os.Stdin.Fd()), rawState)
 	rawState = nil
 }
 
@@ -141,6 +145,22 @@ func Exit(code int) {
 	showCursor()
 	os.Exit(code)
 }
+
+// signalHandler restores the terminal when the process is interrupted
+// (SIGINT/SIGTERM), mirroring PHP's pcntl_signal(SIGINT, fn () => exit())
+// which runs the destructor that restores the TTY.
+func installSignalHandler() {
+	signalOnce.Do(func() {
+		ch := make(chan os.Signal, 1)
+		signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
+		go func() {
+			<-ch
+			Exit(1)
+		}()
+	})
+}
+
+var signalOnce sync.Once
 
 // ioctlSize is a fallback for getting the terminal size directly.
 func ioctlSize() (int, int, error) {

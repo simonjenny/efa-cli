@@ -23,6 +23,7 @@ func SpinResult[T any](message string, fn func() (T, error)) (T, error) {
 	}
 	CapturePreviousNewLines(s.Prompt)
 	hideCursor()
+	installSignalHandler()
 	stop := make(chan struct{})
 	var done sync.WaitGroup
 	done.Add(1)
