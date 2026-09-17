@@ -37,6 +37,9 @@ Go 1.27 or newer (for building from source)
 
 ## Installation
 
+Download a prebuilt binary for Linux, macOS or Windows (amd64/arm64) from the
+[latest release](https://github.com/simonjenny/efa-cli/releases/latest), or build from source:
+
 Build the static binary:
 
 ```bash

@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 	"syscall"
-	"unsafe"
 
 	"golang.org/x/term"
 )
@@ -161,17 +160,3 @@ func installSignalHandler() {
 }
 
 var signalOnce sync.Once
-
-// ioctlSize is a fallback for getting the terminal size directly.
-func ioctlSize() (int, int, error) {
-	type winsize struct {
-		rows, cols, xpixel, ypixel uint16
-	}
-	var ws winsize
-	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, uintptr(syscall.Stdin),
-		uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(&ws)))
-	if errno != 0 {
-		return 0, 0, errno
-	}
-	return int(ws.cols), int(ws.rows), nil
-}
