@@ -1,17 +1,17 @@
 # Command Line Tool for Electronic Timetable Information
 
 ```bash 
-  $ efa 
+  $ efa
   
   efa-cli  v3.0
 
-  VERWENDUNG:  <command> [options] [arguments]
+  USAGE:  <command> [options] [arguments]
 
-  departures Erstelle einen Abfahrtsplan für eine bestimmte Haltestelle.
-  mcp        Starte einen MCP-Server, der departures, messages, route und stopinfo als Tools bereitstellt.
-  messages   Zeige aktuelle Informationen, Störungen und Meldungen (aktuell nur aus dem Netz der Basler Verkehrs-Betriebe!)
-  route      Plane eine Reise von Punkt A nach Punkt B
-  stopinfo   Zeige Informationen zu einer Haltestelle.
+  departures Create a departure schedule for a specific bus stop.
+  mcp        Start an MCP server exposing departures, messages, route and stopinfo as tools.
+  messages   Show current information, disruptions and alerts (currently only from the Basler Verkehrs-Betriebe network in german!)
+  route      Plan a trip from point A to point B
+  stopinfo   Show Information for a stop.
 
 ```
 
