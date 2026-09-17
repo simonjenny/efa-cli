@@ -37,8 +37,30 @@ Go 1.27 or newer (for building from source)
 
 ## Installation
 
-Download a prebuilt binary for Linux, macOS or Windows (amd64/arm64) from the
-[latest release](https://github.com/simonjenny/efa-cli/releases/latest), or build from source:
+### Prebuilt binary
+
+Linux/macOS:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/simonjenny/efa-cli/main/install.sh | sh
+```
+
+Windows (PowerShell):
+
+```powershell
+irm https://raw.githubusercontent.com/simonjenny/efa-cli/main/install.ps1 | iex
+```
+
+Both scripts fetch the correct binary for your platform from the
+[latest release](https://github.com/simonjenny/efa-cli/releases/latest) and install it
+(`/usr/local/bin/efa`, or `%LOCALAPPDATA%\efa\efa.exe` on Windows, added to your `PATH`).
+Windows SmartScreen may still warn on first run ("Windows protected your PC") since the
+binary isn't code-signed — click "More info" → "Run anyway".
+
+Prefer not to run a script? Download the matching binary directly from the
+[latest release](https://github.com/simonjenny/efa-cli/releases/latest) instead.
+
+### Build from source
 
 Build the static binary:
 
