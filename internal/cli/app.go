@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/simonjenny/efa-cli/internal/i18n"
 	"github.com/simonjenny/efa-cli/internal/prompts"
 )
 
@@ -29,7 +30,7 @@ func outf(format string, args ...any) {
 }
 
 // Version of the application.
-const Version = "v2.0"
+const Version = "v3.0"
 
 // AppName is the application name.
 const AppName = "efa-cli"
@@ -65,6 +66,7 @@ var globalOptions = []commandOption{
 	{name: "ansi", negatable: true, description: "Force (or disable --no-ansi) ANSI output"},
 	{name: "no-interaction", short: "n", description: "Do not ask any interactive question"},
 	{name: "verbose", short: "v|vv|vvv", description: "Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug"},
+	{name: "lang", hasValue: true, description: "Language for output (de, en) [default: auto]"},
 }
 
 // allCommands lists the available commands in display order.
@@ -72,12 +74,21 @@ var allCommands []*command
 
 // Run is the application entry point; it returns the exit code.
 func Run(args []string) int {
-	commands := buildCommands()
+	// Detect the language from the locale environment variables; the
+	// --lang option overrides it when present.
+	_ = i18n.SetLang(i18n.DetectEnvLang())
 
 	// Consume leading global options (like Symfony's ArgvInput).
 	rest := args
 	var noInter, quiet, ansi, noAnsi bool
 	for len(rest) > 0 {
+		if strings.HasPrefix(rest[0], "--lang=") {
+			if !applyLang(strings.TrimPrefix(rest[0], "--lang=")) {
+				return 1
+			}
+			rest = rest[1:]
+			continue
+		}
 		switch rest[0] {
 		case "-V", "--version":
 			out(AppName + " " + Version + "\n")
@@ -99,11 +110,23 @@ func Run(args []string) int {
 			rest = rest[1:]
 		case "-v", "-vv", "-vvv":
 			rest = rest[1:]
+		case "--lang":
+			if len(rest) < 2 {
+				commandError(i18n.T("err.option_requires_value", "--lang"), "")
+				return 1
+			}
+			if !applyLang(rest[1]) {
+				return 1
+			}
+			rest = rest[2:]
 		default:
 			goto done
 		}
 	}
 done:
+	// Build the command list after the leading options so a --lang flag
+	// already switched the translation language.
+	commands := buildCommands()
 	applyGlobalFlags(noInter, quiet, ansi, noAnsi)
 	defer resetGlobalFlags()
 	if len(rest) == 0 {
@@ -127,7 +150,7 @@ done:
 					return 0
 				}
 			}
-			return commandError(fmt.Sprintf("Command %q is not defined.", rest[1]), "")
+			return commandError(i18n.T("err.command_not_defined", rest[1]), "")
 		}
 		printListHelp()
 		return 0
@@ -135,7 +158,17 @@ done:
 		return runSummary()
 	}
 
-	return commandError(fmt.Sprintf("Command %q is not defined.", first), "")
+	return commandError(i18n.T("err.command_not_defined", first), "")
+}
+
+// applyLang switches the current language, printing an error and returning
+// false for unsupported languages.
+func applyLang(lang string) bool {
+	if err := i18n.SetLang(lang); err != nil {
+		commandError(i18n.T("err.lang_not_supported", lang, strings.Join(i18n.Supported(), ", ")), "")
+		return false
+	}
+	return true
 }
 
 // applyGlobalFlags applies the root-level option flags.
@@ -207,6 +240,15 @@ func buildCommands() []*command {
 				{name: "json", description: "Shows data as JSON (optional)"},
 			},
 			run: runStopinfo,
+		},
+		{
+			name:        "mcp",
+			description: "Start an MCP server exposing departures, messages, route and stopinfo as tools.",
+			options: []commandOption{
+				{name: "ip", hasValue: true, description: "IP address to bind the MCP server to (default 127.0.0.1)"},
+				{name: "port", hasValue: true, description: "Port to bind the MCP server to (default 8090)"},
+			},
+			run: runMcp,
 		},
 	}
 	return allCommands
@@ -291,7 +333,7 @@ func parseArgs(c *command, tokens []string) (*parsedArgs, int) {
 			}
 			opt, ok := optionByName[name]
 			if !ok {
-				return p, commandError(fmt.Sprintf("The %q option does not exist.", "--"+name), synopsis(c))
+				return p, commandError(i18n.T("err.option_not_exist", "--"+name), synopsis(c))
 			}
 			p.flagSet[opt.name] = true
 			if opt.hasValue {
@@ -304,7 +346,7 @@ func parseArgs(c *command, tokens []string) (*parsedArgs, int) {
 				p.flags[opt.name] = value
 			} else {
 				if hasValue {
-					return p, commandError(fmt.Sprintf("The %q option does not accept a value.", "--"+name), synopsis(c))
+					return p, commandError(i18n.T("err.option_no_value", "--"+name), synopsis(c))
 				}
 				p.flags[opt.name] = ""
 			}
@@ -323,6 +365,10 @@ func parseArgs(c *command, tokens []string) (*parsedArgs, int) {
 				p.noAnsi = true
 			case "verbose":
 				p.verbosity++
+			case "lang":
+				if err := i18n.SetLang(value); err != nil {
+					return p, commandError(i18n.T("err.lang_not_supported", value, strings.Join(i18n.Supported(), ", ")), synopsis(c))
+				}
 			}
 			continue
 		}
@@ -335,7 +381,7 @@ func parseArgs(c *command, tokens []string) (*parsedArgs, int) {
 					p.flagSet["verbose"] = true
 					continue
 				}
-				return p, commandError(fmt.Sprintf("The %q option does not exist.", "-"+short), synopsis(c))
+				return p, commandError(i18n.T("err.option_not_exist", "-"+short), synopsis(c))
 			}
 			p.flagSet[opt.name] = true
 			switch opt.name {
@@ -372,7 +418,7 @@ func parseArgs(c *command, tokens []string) (*parsedArgs, int) {
 		for _, a := range c.args {
 			expected = append(expected, a.name)
 		}
-		return p, commandError(fmt.Sprintf("Too many arguments to %q command, expected arguments %q.", c.name, strings.Join(expected, " ")), synopsis(c))
+		return p, commandError(i18n.T("err.too_many_arguments", c.name, strings.Join(expected, " ")), synopsis(c))
 	}
 	for i, a := range c.args {
 		if i < len(positionals) {
@@ -487,9 +533,9 @@ func maxInt(a, b int) int {
 // printHelp renders the Symfony-style help for a command.
 func printHelp(c *command) {
 	var b strings.Builder
-	b.WriteString("Description:\n")
-	b.WriteString("  " + c.description + "\n\n")
-	b.WriteString("Usage:\n")
+	b.WriteString(i18n.T("help.description") + "\n")
+	b.WriteString("  " + commandDescription(c) + "\n\n")
+	b.WriteString(i18n.T("help.usage") + "\n")
 	b.WriteString("  " + usageLine(c) + "\n")
 
 	allOpts := append(append([]commandOption{}, c.options...), globalOptions...)
@@ -506,12 +552,12 @@ func printHelp(c *command) {
 	}
 
 	if len(c.args) > 0 {
-		b.WriteString("\nArguments:\n")
+		b.WriteString("\n" + i18n.T("help.arguments") + "\n")
 		for _, a := range c.args {
-			b.WriteString("  " + a.name + "  " + strings.Repeat(" ", totalWidth-len(a.name)) + a.description + "\n")
+			b.WriteString("  " + a.name + "  " + strings.Repeat(" ", totalWidth-len(a.name)) + argDescription(c, a) + "\n")
 		}
 	}
-	b.WriteString("\nOptions:\n")
+	b.WriteString("\n" + i18n.T("help.options") + "\n")
 	writeOptions(&b, allOpts, totalWidth)
 	out(b.String())
 }
@@ -559,7 +605,37 @@ func writeOptions(b *strings.Builder, opts []commandOption, totalWidth int) {
 
 func writeOption(b *strings.Builder, o commandOption, totalWidth int) {
 	synopsis := optionSynopsis(o)
-	b.WriteString("  " + synopsis + "  " + strings.Repeat(" ", totalWidth-len(synopsis)) + o.description + "\n")
+	b.WriteString("  " + synopsis + "  " + strings.Repeat(" ", totalWidth-len(synopsis)) + optionDescription(o) + "\n")
+}
+
+// optionDescription translates the option description for the current
+// language, falling back to the raw description for unknown options.
+func optionDescription(o commandOption) string {
+	key := "opt." + o.name
+	if t := i18n.T(key); t != key {
+		return t
+	}
+	return o.description
+}
+
+// commandDescription translates the command description for the current
+// language, falling back to the raw description.
+func commandDescription(c *command) string {
+	key := "cmd." + c.name
+	if t := i18n.T(key); t != key {
+		return t
+	}
+	return c.description
+}
+
+// argDescription translates the argument description for the current
+// language, falling back to the raw description.
+func argDescription(c *command, a commandArg) string {
+	key := "arg." + c.name + "." + a.name
+	if t := i18n.T(key); t != key {
+		return t
+	}
+	return a.description
 }
 
 func optionSynopsis(o commandOption) string {
@@ -594,7 +670,7 @@ func runSummary() int {
 	var b strings.Builder
 	b.WriteString("\n")
 	b.WriteString("  " + decorated(AppName+" ", "white-bold") + " " + decorated(Version, "green-bold") + "\n\n")
-	b.WriteString("  " + decorated("USAGE:", "yellow-bold") + "  <command> [options] [arguments]\n\n")
+	b.WriteString("  " + decorated(i18n.T("summary.usage"), "yellow-bold") + "  <command> [options] [arguments]\n\n")
 	width := 0
 	for _, c := range allCommands {
 		if len(c.name) > width {
@@ -604,7 +680,7 @@ func runSummary() int {
 	sorted := append([]*command{}, allCommands...)
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].name < sorted[j].name })
 	for _, c := range sorted {
-		b.WriteString("  " + decorated(c.name, "green") + strings.Repeat(" ", width-len(c.name)+1) + c.description + "\n")
+		b.WriteString("  " + decorated(c.name, "green") + strings.Repeat(" ", width-len(c.name)+1) + commandDescription(c) + "\n")
 	}
 	b.WriteString("\n")
 	out(b.String())
@@ -614,14 +690,14 @@ func runSummary() int {
 // printListHelp prints the help of the list command (efa --help).
 func printListHelp() {
 	var b strings.Builder
-	b.WriteString("Description:\n")
-	b.WriteString("  List commands\n\n")
-	b.WriteString("Usage:\n")
+	b.WriteString(i18n.T("help.description") + "\n")
+	b.WriteString("  " + i18n.T("help.list_description") + "\n\n")
+	b.WriteString(i18n.T("help.usage") + "\n")
 	b.WriteString("  list [options] [--] [<namespace>]\n\n")
 	listOptions := []commandOption{
-		{name: "raw", description: "To output raw command list"},
-		{name: "format", hasValue: true, description: `The output format (txt, xml, json, or md) [default: "txt"]`},
-		{name: "short", description: "To skip describing commands' arguments"},
+		{name: "raw", description: i18n.T("opt.raw")},
+		{name: "format", hasValue: true, description: i18n.T("opt.format")},
+		{name: "short", description: i18n.T("opt.short")},
 	}
 	allOpts := append(append([]commandOption{}, listOptions...), globalOptions...)
 	totalWidth := 0
@@ -633,18 +709,18 @@ func printListHelp() {
 	if 9 > totalWidth {
 		totalWidth = 9
 	}
-	b.WriteString("Arguments:\n")
-	b.WriteString("  " + "namespace" + "  " + strings.Repeat(" ", totalWidth-9) + "The namespace name\n")
-	b.WriteString("\nOptions:\n")
+	b.WriteString(i18n.T("help.arguments") + "\n")
+	b.WriteString("  " + "namespace" + "  " + strings.Repeat(" ", totalWidth-9) + i18n.T("help.namespace_arg") + "\n")
+	b.WriteString("\n" + i18n.T("help.options") + "\n")
 	writeOptions(&b, allOpts, totalWidth)
-	b.WriteString("\nHelp:\n")
-	helpText := "The " + decorated("list", "info") + " command lists all commands:\n\n" +
+	b.WriteString("\n" + i18n.T("help.help") + "\n")
+	helpText := i18n.T("help.list_intro", decorated("list", "info")) + "\n\n" +
 		"  " + decorated(binaryName()+" list", "info") + "\n\n" +
-		"You can also display the commands for a specific namespace:\n\n" +
+		i18n.T("help.list_namespace") + "\n\n" +
 		"  " + decorated(binaryName()+" list test", "info") + "\n\n" +
-		"You can also output the information in other formats by using the " + decorated("--format", "comment") + " option:\n\n" +
+		i18n.T("help.list_format", decorated("--format", "comment")) + "\n\n" +
 		"  " + decorated(binaryName()+" list --format=xml", "info") + "\n\n" +
-		"It's also possible to get raw list of commands (useful for embedding command runner):\n\n" +
+		i18n.T("help.list_raw") + "\n\n" +
 		"  " + decorated(binaryName()+" list --raw", "info")
 	b.WriteString("  " + strings.ReplaceAll(helpText, "\n", "\n  ") + "\n")
 	out(b.String())

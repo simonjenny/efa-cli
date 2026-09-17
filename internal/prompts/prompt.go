@@ -2,6 +2,8 @@ package prompts
 
 import (
 	"strings"
+
+	"github.com/simonjenny/efa-cli/internal/i18n"
 )
 
 // Prompt is the base for all interactive prompts, mirroring
@@ -25,7 +27,7 @@ type Prompt struct {
 }
 
 func newPrompt() *Prompt {
-	return &Prompt{State: "initial", CancelMessage: "Cancelled."}
+	return &Prompt{State: "initial", CancelMessage: i18n.T("prompt.cancelled")}
 }
 
 // Value returns the current prompt value.
@@ -64,7 +66,7 @@ func (p *Prompt) HandleKeyPress(key string) bool {
 	}
 	if key == KeyCtrlU {
 		p.State = "error"
-		p.Error = "This cannot be reverted."
+		p.Error = i18n.T("prompt.no_revert")
 		return true
 	}
 	if key == KeyCtrlC {
@@ -83,7 +85,7 @@ func (p *Prompt) validate(value any) {
 	p.validated = true
 	if p.required && p.isInvalidWhenRequired(value) {
 		p.State = "error"
-		p.Error = "Required."
+		p.Error = i18n.T("error.required")
 		return
 	}
 }

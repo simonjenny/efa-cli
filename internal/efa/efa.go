@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/simonjenny/efa-cli/internal/i18n"
 	"github.com/simonjenny/efa-cli/internal/jsonx"
 	"github.com/simonjenny/efa-cli/internal/prompts"
 )
@@ -104,7 +105,7 @@ func buildURL(base string, endpoint string, params []queryParam) string {
 func (c *Client) get(endpoint string, params []queryParam) (any, error) {
 	url := buildURL(c.BaseURL, endpoint, params)
 	if c.UseSpinner {
-		return prompts.SpinResult("Fetching Data...", func() (any, error) {
+		return prompts.SpinResult(i18n.T("spinner.fetching"), func() (any, error) {
 			return c.doGet(url)
 		})
 	}

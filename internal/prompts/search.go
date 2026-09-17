@@ -2,6 +2,8 @@ package prompts
 
 import (
 	"strings"
+
+	"github.com/simonjenny/efa-cli/internal/i18n"
 )
 
 // Search runs an interactive search prompt and returns the selected key
@@ -333,9 +335,9 @@ func (p *SearchPrompt) spaceForDropdown(r *Renderer) {
 func (p *SearchPrompt) renderOptions() string {
 	cols, _ := terminalDimensions()
 	if p.typedValue != "" && len(p.matches()) == 0 {
-		msg := "No results."
+		msg := i18n.T("prompt.no_results")
 		if p.State == "searching" {
-			msg = "Searching..."
+			msg = i18n.T("prompt.searching")
 		}
 		return gray("  " + msg)
 	}

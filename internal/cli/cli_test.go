@@ -98,18 +98,29 @@ func copyFrom(b *strings.Builder, r *os.File) (int64, error) {
 	}
 }
 
+// setLang pins the locale for a deterministic Run.
+func setLang(t *testing.T, locale string) {
+	t.Helper()
+	t.Setenv("LANGUAGE", "")
+	t.Setenv("LC_ALL", "")
+	t.Setenv("LC_MESSAGES", "")
+	t.Setenv("LANG", locale)
+}
+
 func TestSummaryOutput(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() {
 		if code := Run([]string{}); code != 0 {
 			t.Errorf("exit code %d", code)
 		}
 	})
-	want := "\n  " + decorated("efa-cli ", "white-bold") + " " + decorated("v2.0", "green-bold") + "\n\n" +
-		"  " + decorated("USAGE:", "yellow-bold") + "  <command> [options] [arguments]\n\n" +
-		"  " + decorated("departures", "green") + " Create a departure schedule for a specific bus stop.\n" +
-		"  " + decorated("messages", "green") + "   Show current information, disruptions and alerts (currently only from the Basler Verkehrs-Betriebe network in german!)\n" +
-		"  " + decorated("route", "green") + "      Plan a trip from point A to point B\n" +
-		"  " + decorated("stopinfo", "green") + "   Show Information for a stop.\n\n"
+	want := "\n  " + decorated("efa-cli ", "white-bold") + " " + decorated("v3.0", "green-bold") + "\n\n" +
+		"  " + decorated("VERWENDUNG:", "yellow-bold") + "  <command> [options] [arguments]\n\n" +
+		"  " + decorated("departures", "green") + " Erstelle einen Abfahrtsplan für eine bestimmte Haltestelle.\n" +
+		"  " + decorated("mcp", "green") + "        Startet einen MCP-Server, der departures, messages, route und stopinfo als Tools bereitstellt.\n" +
+		"  " + decorated("messages", "green") + "   Zeige aktuelle Informationen, Störungen und Meldungen (aktuell nur aus dem Netz der Basler Verkehrs-Betriebe!)\n" +
+		"  " + decorated("route", "green") + "      Plane eine Reise von Punkt A nach Punkt B\n" +
+		"  " + decorated("stopinfo", "green") + "   Zeige Informationen zu einer Haltestelle.\n\n"
 	if got != want {
 		t.Errorf("summary differs:\nGOT:\n%s\nWANT:\n%s", got, want)
 	}
@@ -118,17 +129,20 @@ func TestSummaryOutput(t *testing.T) {
 func TestVersionOutput(t *testing.T) {
 	for _, args := range [][]string{{"--version"}, {"-V"}} {
 		got := captureStdout(t, func() { Run(args) })
-		if got != "efa-cli v2.0\n" {
+		if got != "efa-cli v3.0\n" {
 			t.Errorf("version output %q", got)
 		}
 	}
 }
 
 func TestUnknownCommand(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() { Run([]string{"foo"}) })
-	want := "\n" + strings.Repeat(" ", 33) + "\n" +
-		"  Command \"foo\" is not defined.  \n" +
-		strings.Repeat(" ", 33) + "\n\n"
+	msg := "Befehl \"foo\" ist nicht definiert."
+	pad := strings.Repeat(" ", len(msg)+4)
+	want := "\n" + pad + "\n" +
+		"  " + msg + "  \n" +
+		pad + "\n\n"
 	if got != want {
 		t.Errorf("unknown command:\n%q\nwant:\n%q", got, want)
 	}
@@ -152,6 +166,7 @@ func TestDeparturesJSON(t *testing.T) {
 }
 
 func TestDeparturesTable(t *testing.T) {
+	setLang(t, "en_US.UTF-8")
 	setupClient(t)
 	carbon.SetTestNow(time.Date(2026, 9, 14, 21, 5, 0, 0, time.UTC))
 	t.Cleanup(func() { carbon.SetTestNow(time.Time{}) })
@@ -185,11 +200,12 @@ func TestStopinfoJSON(t *testing.T) {
 }
 
 func TestStopinfoTable(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	setupClient(t)
 	got := captureStdout(t, func() {
 		Run([]string{"stopinfo", "Basel, Basel SBB"})
 	})
-	if !strings.Contains(got, "EFA Stop ID") || !strings.Contains(got, "ch:23005:300") {
+	if !strings.Contains(got, "EFA-Haltestellen-ID") || !strings.Contains(got, "ch:23005:300") {
 		t.Errorf("stopinfo table:\n%s", got)
 	}
 	if !strings.Contains(got, "https://dfi.bvb.ch/?point=51000300") {
@@ -221,10 +237,13 @@ func TestRouteJSON(t *testing.T) {
 }
 
 func TestUnknownOption(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() { Run([]string{"departures", "--foo"}) })
-	want := "\n" + strings.Repeat(" ", 38) + "\n" +
-		"  The \"--foo\" option does not exist.  \n" +
-		strings.Repeat(" ", 38) + "\n\n" +
+	msg := "Die Option \"--foo\" existiert nicht."
+	pad := strings.Repeat(" ", len(msg)+4)
+	want := "\n" + pad + "\n" +
+		"  " + msg + "  \n" +
+		pad + "\n\n" +
 		"departures [--limit [LIMIT]] [--gid] [--json] [--] [<stop>]\n\n"
 	if got != want {
 		t.Errorf("unknown option:\n%q\nwant:\n%q", got, want)
@@ -232,10 +251,13 @@ func TestUnknownOption(t *testing.T) {
 }
 
 func TestTooManyArguments(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() { Run([]string{"departures", "a", "b"}) })
-	want := "\n" + strings.Repeat(" ", 74) + "\n" +
-		"  Too many arguments to \"departures\" command, expected arguments \"stop\".  \n" +
-		strings.Repeat(" ", 74) + "\n\n" +
+	msg := "Zu viele Argumente für den Befehl \"departures\", erwartete Argumente \"stop\"."
+	pad := strings.Repeat(" ", len(msg)+4)
+	want := "\n" + pad + "\n" +
+		"  " + msg + "  \n" +
+		pad + "\n\n" +
 		"departures [--limit [LIMIT]] [--gid] [--json] [--] [<stop>]\n\n"
 	if got != want {
 		t.Errorf("too many arguments:\n%q\nwant:\n%q", got, want)
@@ -255,26 +277,28 @@ func TestMessagesInteractive(t *testing.T) {
 }
 
 func TestHelpOutput(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() { Run([]string{"departures", "--help"}) })
-	if !strings.HasPrefix(got, "Description:\n  Create a departure schedule for a specific bus stop.\n\nUsage:\n  departures [options] [--] [<stop>]") {
+	if !strings.HasPrefix(got, "Beschreibung:\n  Erstelle einen Abfahrtsplan für eine bestimmte Haltestelle.\n\nVerwendung:\n  departures [options] [--] [<stop>]") {
 		t.Errorf("help output:\n%s", got)
 	}
-	if !strings.Contains(got, "      --limit[=LIMIT]   Limits the number of displayed departures (default is 10, optional)") {
-		t.Errorf("help output:\n%s", got)
+	if !strings.Contains(got, "      --limit[=LIMIT]   Begrenzt die Anzahl der angezeigten Abfahrten (Standard: 10, optional)") {
 		t.Errorf("help output missing limit option:\n%s", got)
 	}
 }
 
 func TestHelpCommand(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() { Run([]string{"help", "messages"}) })
-	if !strings.HasPrefix(got, "Description:\n  Show current information") {
+	if !strings.HasPrefix(got, "Beschreibung:\n  Zeige aktuelle Informationen") {
 		t.Errorf("help command output:\n%s", got)
 	}
 }
 
 func TestListCommand(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	got := captureStdout(t, func() { Run([]string{"list"}) })
-	if !strings.Contains(got, "USAGE:") || !strings.Contains(got, "departures") {
+	if !strings.Contains(got, "VERWENDUNG:") || !strings.Contains(got, "departures") {
 		t.Errorf("list output:\n%s", got)
 	}
 }
@@ -305,7 +329,48 @@ func promptsFakeInput(keys []string) {
 	prompts.SetFakeInput(keys)
 }
 
+func TestLangFlagRoot(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
+	got := captureStdout(t, func() { Run([]string{"--lang=en", "list"}) })
+	if !strings.Contains(got, "USAGE:") || !strings.Contains(got, "Create a departure schedule") {
+		t.Errorf("--lang=en list output:\n%s", got)
+	}
+	got = captureStdout(t, func() { Run([]string{"--lang", "de", "list"}) })
+	if !strings.Contains(got, "VERWENDUNG:") || !strings.Contains(got, "Erstelle einen Abfahrtsplan") {
+		t.Errorf("--lang de list output:\n%s", got)
+	}
+}
+
+func TestLangFlagCommandLevel(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
+	got := captureStdout(t, func() { Run([]string{"departures", "--lang=en", "--help"}) })
+	if !strings.HasPrefix(got, "Description:\n  Create a departure schedule for a specific bus stop.\n\nUsage:") {
+		t.Errorf("--lang=en help output:\n%s", got)
+	}
+	if !strings.Contains(got, "Limits the number of displayed departures") {
+		t.Errorf("--lang=en help missing english option:\n%s", got)
+	}
+}
+
+func TestLangUnsupported(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
+	got := captureStdout(t, func() {
+		if code := Run([]string{"--lang=fr", "list"}); code != 1 {
+			t.Errorf("exit code %d, want 1", code)
+		}
+	})
+	msg := "Sprache \"fr\" wird nicht unterstützt. Unterstützte Sprachen: de, en"
+	pad := strings.Repeat(" ", len(msg)+4)
+	want := "\n" + pad + "\n" +
+		"  " + msg + "  \n" +
+		pad + "\n\n"
+	if got != want {
+		t.Errorf("unsupported lang:\n%q\nwant:\n%q", got, want)
+	}
+}
+
 func TestDeparturesInteractiveSearch(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	setupClient(t)
 	carbon.SetTestNow(time.Date(2026, 9, 14, 21, 5, 0, 0, time.UTC))
 	t.Cleanup(func() { carbon.SetTestNow(time.Time{}) })
@@ -324,6 +389,7 @@ func TestDeparturesInteractiveSearch(t *testing.T) {
 }
 
 func TestRouteInteractiveTripSelect(t *testing.T) {
+	setLang(t, "de_CH.UTF-8")
 	setupClient(t)
 	// The trips select: ENTER picks the first trip.
 	promptsFakeInput([]string{"\n"})
@@ -333,7 +399,7 @@ func TestRouteInteractiveTripSelect(t *testing.T) {
 	if i := strings.Index(got, "┌"); i != -1 {
 		got = got[i:]
 	}
-	if !strings.Contains(got, "Fussweg") || !strings.Contains(got, "Getting off/Transferring") {
+	if !strings.Contains(got, "Fussweg") || !strings.Contains(got, "Aussteigen/Umsteigen") {
 		t.Errorf("route interactive output:\n%s", got)
 	}
 }

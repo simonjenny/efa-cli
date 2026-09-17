@@ -3,6 +3,8 @@ package carbon
 import (
 	"testing"
 	"time"
+
+	"github.com/simonjenny/efa-cli/internal/i18n"
 )
 
 func mustParse(t *testing.T, s string) time.Time {
@@ -15,6 +17,8 @@ func mustParse(t *testing.T, s string) time.Time {
 }
 
 func TestDiffForHumansGoldenVectors(t *testing.T) {
+	_ = i18n.SetLang("en")
+	t.Cleanup(func() { _ = i18n.SetLang(i18n.DefaultLang) })
 	now := mustParse(t, "2026-09-14T20:41:10Z")
 	cases := []struct {
 		in   string

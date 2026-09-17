@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/simonjenny/efa-cli/internal/carbon"
 	"github.com/simonjenny/efa-cli/internal/efa"
 	"github.com/simonjenny/efa-cli/internal/htmltext"
+	"github.com/simonjenny/efa-cli/internal/i18n"
 	"github.com/simonjenny/efa-cli/internal/jsonx"
 	"github.com/simonjenny/efa-cli/internal/prompts"
 	"github.com/simonjenny/efa-cli/internal/split"
@@ -46,7 +46,7 @@ func promptSearch(client *efa.Client, label, placeholder string) (string, error)
 // NonInteractiveValidationException.
 func handlePromptError(err error) int {
 	if _, ok := err.(*prompts.NonInteractiveValidationError); ok {
-		out("Required.\n")
+		out(i18n.T("error.required") + "\n")
 		return 1
 	}
 	out(err.Error() + "\n")
@@ -62,7 +62,7 @@ func runDepartures(p *parsedArgs) int {
 
 	stop := p.arg("stop")
 	if stop == "" {
-		value, err := promptSearch(client, "Witch Stop do you want to see the departures for?", "Basel, Claraplatz")
+		value, err := promptSearch(client, i18n.T("prompt.departures.stop"), "Basel, Claraplatz")
 		if err != nil {
 			return handlePromptError(err)
 		}
@@ -78,7 +78,7 @@ func runDepartures(p *parsedArgs) int {
 	client.UseSpinner = !jsonMode
 	departures, err := client.Abfahrt(stop, limit, p.has("gid"))
 	if err != nil {
-		out("Fetching Data... failed\n")
+		out(i18n.T("error.fetch_failed") + "\n")
 		return 1
 	}
 
@@ -117,7 +117,7 @@ func runDepartures(p *parsedArgs) int {
 			carbon.DiffForHumans(dep, carbon.Now()),
 		})
 	}
-	prompts.DisplayTable([]string{"", "Nr.", "Destination", "Departure"}, rows)
+	prompts.DisplayTable([]string{"", i18n.T("table.header.number"), i18n.T("table.header.destination"), i18n.T("table.header.departure")}, rows)
 	return 0
 }
 
@@ -163,7 +163,7 @@ func messages(jsonMode bool) int {
 	client.UseSpinner = !jsonMode
 	meldungen, err := client.Meldungen()
 	if err != nil {
-		out("Fetching Data... failed\n")
+		out(i18n.T("error.fetch_failed") + "\n")
 		return 1
 	}
 
@@ -187,7 +187,7 @@ func messages(jsonMode bool) int {
 	}
 
 	client.UseSpinner = false
-	selected, err := prompts.Select("Which alert would you like to read?", options, 0, "")
+	selected, err := prompts.Select(i18n.T("prompt.messages.select"), options, 0, "")
 	if err != nil {
 		return handlePromptError(err)
 	}
@@ -234,7 +234,7 @@ func runStopinfo(p *parsedArgs) int {
 
 	stop := p.arg("stop")
 	if stop == "" {
-		value, err := promptSearch(client, "Witch stop do you want to show information for?", "Basel, Basel SBB")
+		value, err := promptSearch(client, i18n.T("prompt.stopinfo.stop"), "Basel, Basel SBB")
 		if err != nil {
 			return handlePromptError(err)
 		}
@@ -245,7 +245,7 @@ func runStopinfo(p *parsedArgs) int {
 	client.UseSpinner = !jsonMode
 	haltestelle, err := client.Haltestelle(stop)
 	if err != nil {
-		out("Fetching Data... failed\n")
+		out(i18n.T("error.fetch_failed") + "\n")
 		return 1
 	}
 
@@ -281,11 +281,11 @@ func runStopinfo(p *parsedArgs) int {
 	}
 
 	rows := [][]string{
-		{"EFA Stop ID", id},
-		{"GID", gid},
-		{"Coordinates", coords},
-		{"Google Maps", "https://www.google.com/maps/search/?api=1&query=" + geo1 + "," + geo0},
-		{"Web Departure Monitor", "https://dfi.bvb.ch/?point=" + id},
+		{i18n.T("stopinfo.efa_id"), id},
+		{i18n.T("stopinfo.gid"), gid},
+		{i18n.T("stopinfo.coordinates"), coords},
+		{i18n.T("stopinfo.google_maps"), "https://www.google.com/maps/search/?api=1&query=" + geo1 + "," + geo0},
+		{i18n.T("stopinfo.web_departure_monitor"), "https://dfi.bvb.ch/?point=" + id},
 		{"", ""},
 	}
 
@@ -304,8 +304,8 @@ func runStopinfo(p *parsedArgs) int {
 			text.WriteString("\n")
 		}
 		text.WriteString("\n")
-		text.WriteString("Detailed information available at http://info.bvb.ch (German only)")
-		rows = append(rows, []string{"Info", text.String()})
+		text.WriteString(i18n.T("info.detailed"))
+		rows = append(rows, []string{i18n.T("stopinfo.info"), text.String()})
 	}
 
 	prompts.DisplayTable([]string{name, ""}, rows)
@@ -323,7 +323,7 @@ func runRoute(p *parsedArgs) int {
 
 	start := p.arg("start")
 	if start == "" {
-		value, err := promptSearch(client, "Starting Stop:", "Basel, Basel SBB")
+		value, err := promptSearch(client, i18n.T("prompt.route.start"), "Basel, Basel SBB")
 		if err != nil {
 			return handlePromptError(err)
 		}
@@ -332,7 +332,7 @@ func runRoute(p *parsedArgs) int {
 
 	destination := p.arg("destination")
 	if destination == "" {
-		value, err := promptSearch(client, "Destination Stop:", "Basel, Claraplatz")
+		value, err := promptSearch(client, i18n.T("prompt.route.destination"), "Basel, Claraplatz")
 		if err != nil {
 			return handlePromptError(err)
 		}
@@ -342,7 +342,7 @@ func runRoute(p *parsedArgs) int {
 	timeValue := p.arg("time")
 	if timeValue == "" {
 		client.UseSpinner = false
-		value, err := prompts.Text("At wich time would you like to departure/arrive ?", "", carbon.FormatTimeHi(now), "")
+		value, err := prompts.Text(i18n.T("prompt.route.time"), "", carbon.FormatTimeHi(now), "")
 		if err != nil {
 			return handlePromptError(err)
 		}
@@ -352,7 +352,7 @@ func runRoute(p *parsedArgs) int {
 	dateValue := p.arg("date")
 	if dateValue == "" {
 		client.UseSpinner = false
-		value, err := prompts.Text("At wich date would you like to departure/arrive ?", "", carbon.FormatDateDMY(now), "")
+		value, err := prompts.Text(i18n.T("prompt.route.date"), "", carbon.FormatDateDMY(now), "")
 		if err != nil {
 			return handlePromptError(err)
 		}
@@ -362,9 +362,9 @@ func runRoute(p *parsedArgs) int {
 	mode := p.arg("mode")
 	if mode == "" {
 		client.UseSpinner = false
-		value, err := prompts.Select("Do you want the trips for", []prompts.SelectOption{
-			{Key: "Departure", Label: "Departure"},
-			{Key: "Arrival", Label: "Arrival"},
+		value, err := prompts.Select(i18n.T("prompt.route.mode"), []prompts.SelectOption{
+			{Key: "Departure", Label: i18n.T("prompt.route.mode.departure")},
+			{Key: "Arrival", Label: i18n.T("prompt.route.mode.arrival")},
 		}, 0, "")
 		if err != nil {
 			return handlePromptError(err)
@@ -382,7 +382,7 @@ func runRoute(p *parsedArgs) int {
 		Mode:        mode,
 	})
 	if err != nil {
-		out("Fetching Data... failed\n")
+		out(i18n.T("error.fetch_failed") + "\n")
 		return 1
 	}
 
@@ -397,7 +397,7 @@ func runRoute(p *parsedArgs) int {
 	}
 	tripsList, ok := trips.([]any)
 	if !ok || len(tripsList) == 0 {
-		prompts.Error("There are no trips available!")
+		prompts.Error(i18n.T("error.no_trips"))
 		return 0
 	}
 
@@ -420,12 +420,12 @@ func runRoute(p *parsedArgs) int {
 		at := stringOf(jsonx.Path(firstLeg, "points", "0", "dateTime", "time"))
 		interchange := stringOf(jsonx.Path(obj, "interchange"))
 		duration := stringOf(jsonx.Path(obj, "duration"))
-		label := fmt.Sprintf("Departing from %s at %s with %s transfer(s). Duration: %sh", from, at, interchange, duration)
+		label := i18n.T("route.trip_label", from, at, interchange, duration)
 		tripOptions = append(tripOptions, prompts.SelectOption{Key: "_" + strconv.Itoa(i), Label: label})
 	}
 
 	client.UseSpinner = false
-	selected, err := prompts.Select("Available Trips:", tripOptions, 0, "")
+	selected, err := prompts.Select(i18n.T("prompt.route.select"), tripOptions, 0, "")
 	if err != nil {
 		return handlePromptError(err)
 	}
@@ -489,10 +489,10 @@ func runRoute(p *parsedArgs) int {
 		})
 	}
 
-	prompts.DisplayTable([]string{"", "Nr.", "Boarding", "Departure", "Arrival", "Duration", "Getting off/Transferring"}, rows)
+	prompts.DisplayTable([]string{"", i18n.T("table.header.number"), i18n.T("table.header.boarding"), i18n.T("table.header.departure"), i18n.T("table.header.arrival"), i18n.T("table.header.duration"), i18n.T("table.header.getting_off")}, rows)
 
 	if meldungen {
-		confirmed, err := prompts.Confirm("there are alerts for this route? Would you like to see them now?", true)
+		confirmed, err := prompts.Confirm(i18n.T("prompt.route.confirm_alerts"), true)
 		if err != nil {
 			return handlePromptError(err)
 		}

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/simonjenny/efa-cli/internal/i18n"
 	"github.com/simonjenny/efa-cli/internal/jsonx"
 )
 
@@ -86,14 +87,15 @@ func DiffForHumans(t, now time.Time) string {
 		count, unit = s, "second"
 	}
 
-	text := fmt.Sprintf("%d %s", count, unit)
+	unitKey := "diff." + unit
 	if count != 1 {
-		text += "s"
+		unitKey += "s"
 	}
+	text := fmt.Sprintf("%d %s", count, i18n.T(unitKey))
 	if invert {
-		return text + " from now"
+		return fmt.Sprintf(i18n.T("diff.from_now"), text)
 	}
-	return text + " ago"
+	return fmt.Sprintf(i18n.T("diff.ago"), text)
 }
 
 // intervalComponents computes the calendar difference t2 - t1 (t2 >= t1)
