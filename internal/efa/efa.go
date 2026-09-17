@@ -252,8 +252,17 @@ func (c *Client) Route(args RouteArgs) (any, error) {
 		{key: "name_origin", value: args.Start},
 		{key: "type_destination", value: "stop"},
 		{key: "name_destination", value: args.Destination},
-		{key: "itdTripDateTimeDepArr", value: args.Mode},
+		{key: "itdTripDateTimeDepArr", value: depArrCode(args.Mode)},
 	})
+}
+
+// depArrCode maps the user-facing "Departure"/"Arrival" mode to the short
+// code the EFA API expects for itdTripDateTimeDepArr.
+func depArrCode(mode string) string {
+	if mode == "Arrival" {
+		return "arr"
+	}
+	return "dep"
 }
 
 // Abfahrt returns the departures for a stop, mirroring Efa::abfahrt().

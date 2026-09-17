@@ -1,5 +1,5 @@
 
-[90m ┌[39m [36mthere are alerts for this route? Would you like to see them now?[39m [90m┐[39m
-[90m │[39m [32m●[39m Yes [2m/ ○ No[22m                                                     [90m│[39m
-[90m └──────────────────────────────────────────────────────────────────┘[39m
+[37m ┌[39m [36mthere are alerts for this route? Would you like to see them now?[39m [37m┐[39m
+[37m │[39m [32m●[39m Yes [2m/ ○ No[22m                                                     [37m│[39m
+[37m └──────────────────────────────────────────────────────────────────┘[39m
 

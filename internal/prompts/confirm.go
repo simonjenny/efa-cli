@@ -66,7 +66,7 @@ func (p *ConfirmPrompt) renderer() string {
 		r.box(truncate(p.label, cols-6), p.renderOptions(), "", "yellow").
 			warning(truncate(p.Error, cols-5))
 	default:
-		r.box(cyan(truncate(p.label, cols-6)), p.renderOptions(), "", "gray")
+		r.box(cyan(truncate(p.label, cols-6)), p.renderOptions(), "", "white")
 		r.newLine(1)
 	}
 	return r.String()

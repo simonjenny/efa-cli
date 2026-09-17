@@ -114,7 +114,7 @@ func TestSummaryOutput(t *testing.T) {
 			t.Errorf("exit code %d", code)
 		}
 	})
-	want := "\n  " + decorated("efa-cli ", "white-bold") + " " + decorated("v3.0", "green-bold") + "\n\n" +
+	want := "\n  " + decorated("efa-cli ", "white-bold") + " " + decorated(Version, "green-bold") + "\n\n" +
 		"  " + decorated("VERWENDUNG:", "yellow-bold") + "  <command> [options] [arguments]\n\n" +
 		"  " + decorated("departures", "green") + " Erstelle einen Abfahrtsplan für eine bestimmte Haltestelle.\n" +
 		"  " + decorated("mcp", "green") + "        Startet einen MCP-Server, der departures, messages, route und stopinfo als Tools bereitstellt.\n" +
@@ -129,7 +129,7 @@ func TestSummaryOutput(t *testing.T) {
 func TestVersionOutput(t *testing.T) {
 	for _, args := range [][]string{{"--version"}, {"-V"}} {
 		got := captureStdout(t, func() { Run(args) })
-		if got != "efa-cli v3.0\n" {
+		if got != "efa-cli "+Version+"\n" {
 			t.Errorf("version output %q", got)
 		}
 	}
@@ -229,7 +229,7 @@ func TestMessagesJSON(t *testing.T) {
 func TestRouteJSON(t *testing.T) {
 	setupClient(t)
 	got := captureStdout(t, func() {
-		Run([]string{"route", "Basel, Basel SBB", "Basel, Claraplatz", "2045", "20260914", "Departure", "--json"})
+		Run([]string{"route", "Basel, Basel SBB", "Basel, Claraplatz", "20:45", "14.09.2026", "Departure", "--json"})
 	})
 	if !strings.Contains(got, `"trips"`) {
 		t.Errorf("route json missing trips:\n%s", got[:200])
@@ -394,7 +394,7 @@ func TestRouteInteractiveTripSelect(t *testing.T) {
 	// The trips select: ENTER picks the first trip.
 	promptsFakeInput([]string{"\n"})
 	got := captureStdout(t, func() {
-		Run([]string{"route", "Basel, Basel SBB", "Basel, Claraplatz", "2045", "20260914", "Departure"})
+		Run([]string{"route", "Basel, Basel SBB", "Basel, Claraplatz", "20:45", "14.09.2026", "Departure"})
 	})
 	if i := strings.Index(got, "┌"); i != -1 {
 		got = got[i:]

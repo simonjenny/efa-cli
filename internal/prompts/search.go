@@ -305,10 +305,10 @@ func (p *SearchPrompt) renderer() string {
 		r.box(truncate(p.label, cols-6), p.valueWithCursor(maxWidth), p.renderOptions(), "yellow").
 			warning(truncate(p.Error, cols-5))
 	case "searching":
-		r.box(cyan(truncate(p.label, cols-6)), p.valueWithCursorAndSearchIcon(maxWidth), p.renderOptions(), "gray").
+		r.box(cyan(truncate(p.label, cols-6)), p.valueWithCursorAndSearchIcon(maxWidth), p.renderOptions(), "white").
 			hint(p.hint)
 	default:
-		r.box(cyan(truncate(p.label, cols-6)), p.valueWithCursor(maxWidth), p.renderOptions(), "gray")
+		r.box(cyan(truncate(p.label, cols-6)), p.valueWithCursor(maxWidth), p.renderOptions(), "white")
 		if p.hint != "" {
 			r.hint(p.hint)
 		} else {

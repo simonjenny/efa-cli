@@ -30,14 +30,17 @@ func Now() time.Time {
 }
 
 // Parse parses a date string the way Carbon::parse does for the formats
-// used by efa-cli: RFC 3339 timestamps and bare "HH:MM" / "HH:MM:SS"
-// times (which refer to today).
+// used by efa-cli: RFC 3339 timestamps, bare "d.m.Y" dates and bare
+// "HH:MM" / "HH:MM:SS" times (which refer to today).
 func Parse(s string) (time.Time, error) {
 	s = strings.TrimSpace(s)
 	if t, err := time.Parse(time.RFC3339, s); err == nil {
 		return t, nil
 	}
 	if t, err := time.Parse("2006-01-02T15:04:05", s); err == nil {
+		return t, nil
+	}
+	if t, err := time.Parse("02.01.2006", s); err == nil {
 		return t, nil
 	}
 	if t, err := time.Parse("15:04:05", s); err == nil {
@@ -167,6 +170,12 @@ func FormatDateDMY(t time.Time) string {
 // FormatTimeHi formats a time as H:i (PHP date('H:i')).
 func FormatTimeHi(t time.Time) string {
 	return t.Format("15:04")
+}
+
+// FormatTimeHiNumeric formats a time as Hi (PHP date('Hi')), matching the
+// itdTime query parameter the EFA API expects.
+func FormatTimeHiNumeric(t time.Time) string {
+	return t.Format("1504")
 }
 
 // FormatInt converts an integer the way PHP prints it.

@@ -114,7 +114,7 @@ func (p *TextPrompt) renderer() string {
 		r.box(truncate(p.label, cols-6), p.valueWithCursor(maxWidth), "", "yellow").
 			warning(truncate(p.Error, cols-5))
 	default:
-		r.box(cyan(truncate(p.label, cols-6)), p.valueWithCursor(maxWidth), "", "gray")
+		r.box(cyan(truncate(p.label, cols-6)), p.valueWithCursor(maxWidth), "", "white")
 		if p.hint != "" {
 			r.hint(p.hint)
 		} else {

@@ -2,6 +2,19 @@ package efa
 
 import "testing"
 
+func TestDepArrCode(t *testing.T) {
+	cases := []struct{ mode, want string }{
+		{"Departure", "dep"},
+		{"Arrival", "arr"},
+		{"", "dep"},
+	}
+	for _, c := range cases {
+		if got := depArrCode(c.mode); got != c.want {
+			t.Errorf("depArrCode(%q) = %q, want %q", c.mode, got, c.want)
+		}
+	}
+}
+
 func TestGuzzleQueryEncode(t *testing.T) {
 	cases := []struct{ in, want string }{
 		{"Basler Verkehrs-Betriebe (BVB)", "Basler%20Verkehrs-Betriebe%20(BVB)"},

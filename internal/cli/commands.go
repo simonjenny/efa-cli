@@ -372,11 +372,22 @@ func runRoute(p *parsedArgs) int {
 		mode = value
 	}
 
+	parsedDate, err := carbon.Parse(dateValue)
+	if err != nil {
+		out(i18n.T("error.fetch_failed") + "\n")
+		return 1
+	}
+	parsedTime, err := carbon.Parse(timeValue)
+	if err != nil {
+		out(i18n.T("error.fetch_failed") + "\n")
+		return 1
+	}
+
 	jsonMode := p.has("json")
 	client.UseSpinner = !jsonMode
 	routes, err := client.Route(efa.RouteArgs{
-		Date:        dateValue,
-		Time:        timeValue,
+		Date:        carbon.FormatDateYmd(parsedDate),
+		Time:        carbon.FormatTimeHiNumeric(parsedTime),
 		Start:       start,
 		Destination: destination,
 		Mode:        mode,

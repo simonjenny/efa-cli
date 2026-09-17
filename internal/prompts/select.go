@@ -136,7 +136,7 @@ func (p *SelectPrompt) renderer() string {
 		r.box(truncate(p.label, cols-6), p.renderOptions("cyan"), "", "yellow").
 			warning(truncate(p.Error, cols-5))
 	default:
-		r.box(cyan(truncate(p.label, cols-6)), p.renderOptions("cyan"), "", "gray")
+		r.box(cyan(truncate(p.label, cols-6)), p.renderOptions("cyan"), "", "white")
 		if p.hint != "" {
 			r.hint(p.hint)
 		} else {

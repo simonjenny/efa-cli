@@ -30,7 +30,7 @@ func outf(format string, args ...any) {
 }
 
 // Version of the application.
-const Version = "v3.0"
+const Version = "v3.0.1"
 
 // AppName is the application name.
 const AppName = "efa-cli"

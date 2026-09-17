@@ -161,11 +161,20 @@ func routeTool(_ context.Context, _ *mcp.CallToolRequest, args routeArgs) (*mcp.
 		mode = "Departure"
 	}
 
+	parsedDate, err := carbon.Parse(dateValue)
+	if err != nil {
+		return errorResult(i18n.T("error.fetch_failed")), nil, nil
+	}
+	parsedTime, err := carbon.Parse(timeValue)
+	if err != nil {
+		return errorResult(i18n.T("error.fetch_failed")), nil, nil
+	}
+
 	client := newClient()
 	client.UseSpinner = false
 	routes, err := client.Route(efa.RouteArgs{
-		Date:        dateValue,
-		Time:        timeValue,
+		Date:        carbon.FormatDateYmd(parsedDate),
+		Time:        carbon.FormatTimeHiNumeric(parsedTime),
 		Start:       args.Start,
 		Destination: args.Destination,
 		Mode:        mode,

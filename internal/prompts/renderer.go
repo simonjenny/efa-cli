@@ -301,6 +301,8 @@ func colorWrap(color, text string) string {
 		return red(text)
 	case "yellow":
 		return yellow(text)
+	case "white":
+		return white(text)
 	default:
 		return text
 	}

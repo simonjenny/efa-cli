@@ -114,4 +114,14 @@ func TestParseFormats(t *testing.T) {
 	if _, err := Parse("not a time"); err == nil {
 		t.Error("expected parse error")
 	}
+	dmy := mustParse(t, "17.09.2026")
+	if dmy.Year() != 2026 || dmy.Month() != 9 || dmy.Day() != 17 {
+		t.Errorf("wrong date: %v", dmy)
+	}
+	if got := FormatDateYmd(dmy); got != "20260917" {
+		t.Errorf("FormatDateYmd(%v) = %q, want 20260917", dmy, got)
+	}
+	if got := FormatTimeHiNumeric(hm); got != "2042" {
+		t.Errorf("FormatTimeHiNumeric(%v) = %q, want 2042", hm, got)
+	}
 }
